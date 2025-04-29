@@ -1,6 +1,6 @@
 class CalorieTracker {
     constructor(){
-        this._calorieLimit = 3000;
+        this._calorieLimit = 200;
         this._totalCalories = 0;
         this._meals = [];
         this._workouts = [];
@@ -9,6 +9,7 @@ class CalorieTracker {
         this._displayCaloriesConsumed()
         this._displayCaloriesBurned()
         this._displayCaloriesRemaining()
+        this._displayClaorieProgress()
     }
 
     //public methods
@@ -52,7 +53,35 @@ class CalorieTracker {
 
     _displayCaloriesRemaining(){
         const caloriesRemaining = document.getElementById('calories-remaining');
-        caloriesRemaining.innerText =  this._calorieLimit - this._totalCalories
+        const remaining = this._calorieLimit - this._totalCalories;
+        caloriesRemaining.innerText =  remaining
+        const progressBar = document.getElementById('calorie-progress');
+
+        //checking if thee is any daily limit calorie limit is consumed or not to display warning
+        if(remaining<=0){
+            //chnaging for card body of calories remaining
+            caloriesRemaining.parentElement.parentElement.classList.remove('bg-light');
+            caloriesRemaining.parentElement.parentElement.classList.add('bg-danger');
+            //changing for progress bar
+            progressBar.classList.add('bg-danger')
+            progressBar.classList.remove('bg-success')
+        }else{
+            caloriesRemaining.parentElement.parentElement.classList.add('bg-light');
+            caloriesRemaining.parentElement.parentElement.classList.remove('bg-danger');
+            progressBar.classList.remove('bg-danger')
+            progressBar.classList.add('bg-success')
+        }
+    }
+
+    _displayClaorieProgress(){
+        const progressBar = document.getElementById('calorie-progress');
+        const percentage = (this._totalCalories / this._calorieLimit)*100;
+        const width = Math.min(percentage,100);
+        console.log(width)
+        progressBar.style.width = `${width}%`;
+        // if(this._displayCaloriesRemaining()<=0){
+
+        // }
     }
 
     _render(){
@@ -60,6 +89,7 @@ class CalorieTracker {
         this._displayCaloriesConsumed()
         this._displayCaloriesBurned()
         this._displayCaloriesRemaining()
+        this._displayClaorieProgress()
     }
 }
 
