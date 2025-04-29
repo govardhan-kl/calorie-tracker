@@ -76,8 +76,8 @@ class CalorieTracker {
     _displayClaorieProgress(){
         const progressBar = document.getElementById('calorie-progress');
         const percentage = (this._totalCalories / this._calorieLimit)*100;
-        const width = Math.min(percentage,100);
-        console.log(width)
+        let width = Math.min(percentage,100);
+        width = width < 0 ? 0 : width;
         progressBar.style.width = `${width}%`;
         // if(this._displayCaloriesRemaining()<=0){
 
@@ -114,14 +114,15 @@ class Workout {
 class App {
     constructor(){
         this._tracker = new CalorieTracker();
-        document.getElementById('meal-form').addEventListener('submit',this._addNewMeal.bind(this));//bind helps us to ind this to an App class no to the element the event is on
-        document.getElementById('workout-form').addEventListener('submit',this._addNewWorkout.bind(this));
+        document.getElementById('meal-form').addEventListener('submit',this._addNew_Item.bind(this, 'meal'));//bind helps us to ind this to an App class no to the element the event is on
+        document.getElementById('workout-form').addEventListener('submit',this._addNew_Item.bind(this, 'workout')); // we can still pass parameters in bind
     }
 
-    _addNewMeal(e){
+    _addNew_Item(type,e){ //as we are passing arguments, arguments come first in the event object
         e.preventDefault();
-        const name = document.getElementById('meal-name');
-        const calories = document.getElementById('meal-calories');
+
+        const name = document.getElementById(`${type}-name`);
+        const calories = document.getElementById(`${type}-calories`);
 
         //validate inputs
         if (name.value === '' || calories.value === ''){
@@ -129,41 +130,21 @@ class App {
             return
         }
        
-        const meal = new Meal(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
-        this._tracker.addMeal(meal);
-
-        name.value = '';
-        calories.value = '';
-
-        const collapseMealForm = document.getElementById('collapse-meal');
-        const bsCollapse = new bootstrap.Collapse(collapseMealForm,{
-            toggle:true
-        });
-        // collpsed.style.display = 'none';
-    }
-
-    _addNewWorkout(e){
-        e.preventDefault();
-        const name = document.getElementById('workout-name');
-        const calories = document.getElementById('workout-calories');
-
-        //validate inputs
-        if (name.value === '' || calories.value === ''){
-            alert('Pill fill the fields');
-            return;
+        if(type === 'meal'){
+            const meal = new Meal(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
+            this._tracker.addMeal(meal);
+        }else{
+            const workout = new Workout(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
+            this._tracker.addWorkout(workout);
         }
-       
-        const workout = new Workout(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
-        this._tracker.addWorkout(workout);
-
+        
         name.value = '';
         calories.value = '';
 
-        const collapseWorkoutForm = document.getElementById('collapse-workout');
-        const bsCollapse = new bootstrap.Collapse(collapseWorkoutForm,{
+        const collapseForm = document.getElementById(`collapse-${type}`);
+        const bsCollapse = new bootstrap.Collapse(collapseForm,{
             toggle:true
         });
-        console.log(bsCollapse);
     }
 }
 
