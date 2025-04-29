@@ -111,12 +111,61 @@ class Workout {
     }
 }
 
-const tracker = new CalorieTracker();
+class App {
+    constructor(){
+        this._tracker = new CalorieTracker();
+        document.getElementById('meal-form').addEventListener('submit',this._addNewMeal.bind(this));//bind helps us to ind this to an App class no to the element the event is on
+        document.getElementById('workout-form').addEventListener('submit',this._addNewWorkout.bind(this));
+    }
 
-const breakFast = new Meal('BreakFast', 300);
-tracker.addMeal(breakFast);
+    _addNewMeal(e){
+        e.preventDefault();
+        const name = document.getElementById('meal-name');
+        const calories = document.getElementById('meal-calories');
 
-const morningRun = new Workout('Morning Run', 200);
-tracker.addWorkout(morningRun);
+        //validate inputs
+        if (name.value === '' || calories.value === ''){
+            alert('Pill fill the fields');
+            return
+        }
+       
+        const meal = new Meal(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
+        this._tracker.addMeal(meal);
 
-console.log(tracker,breakFast,morningRun)
+        name.value = '';
+        calories.value = '';
+
+        const collapseMealForm = document.getElementById('collapse-meal');
+        const bsCollapse = new bootstrap.Collapse(collapseMealForm,{
+            toggle:true
+        });
+        // collpsed.style.display = 'none';
+    }
+
+    _addNewWorkout(e){
+        e.preventDefault();
+        const name = document.getElementById('workout-name');
+        const calories = document.getElementById('workout-calories');
+
+        //validate inputs
+        if (name.value === '' || calories.value === ''){
+            alert('Pill fill the fields');
+            return;
+        }
+       
+        const workout = new Workout(name.value,Number(calories.value));//bcoz the values will be in string, or we can do +caloreies.value
+        this._tracker.addWorkout(workout);
+
+        name.value = '';
+        calories.value = '';
+
+        const collapseWorkoutForm = document.getElementById('collapse-workout');
+        const bsCollapse = new bootstrap.Collapse(collapseWorkoutForm,{
+            toggle:true
+        });
+        console.log(bsCollapse);
+    }
+}
+
+const app = new App()
+console.log(app)
