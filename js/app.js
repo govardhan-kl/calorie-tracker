@@ -27,6 +27,26 @@ class CalorieTracker {
         this._render()
     }
 
+    removeMeal(id){
+        const index = this._meals.findIndex((meal)=>{ return meal.id === Number(id)});
+        if(index !== -1){
+            const meal = this._meals[index];
+            this._totalCalories -= meal.calories;
+            this._meals.splice(index,1);
+            this._render()
+        }
+    }
+
+    removeWorkout(id){
+        const index = this._workouts.findIndex((workout)=>{ return workout.id === Number(id)});
+        if(index !== -1){
+            const workout = this._workouts[index];
+            this._totalCalories += workout.calories;
+            this._workouts.splice(index,1);
+            this._render()
+        }
+    }
+
     //private-methods
     _displayNewMeal(meal){
         const mealItems = document.getElementById('meal-items');
@@ -157,6 +177,8 @@ class App {
         this._tracker = new CalorieTracker();
         document.getElementById('meal-form').addEventListener('submit',this._addNew_Item.bind(this, 'meal'));//bind helps us to ind this to an App class no to the element the event is on
         document.getElementById('workout-form').addEventListener('submit',this._addNew_Item.bind(this, 'workout')); // we can still pass parameters in bind
+        document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this,'meal'));
+        document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this,'workout'));
     }
 
     _addNew_Item(type,e){ //as we are passing arguments, arguments come first in the event object
@@ -186,6 +208,19 @@ class App {
         const bsCollapse = new bootstrap.Collapse(collapseForm,{
             toggle:true
         });
+    }
+
+    // removing item
+    _removeItem(type,e){
+        if(e.target.classList.contains('delete') || e.target.classList.contains('fa-xmark')){
+            if(confirm('Are you Sure')){
+                const id = e.target.closest('.card').getAttribute('data-id')
+                
+                type === 'meal' ? this._tracker.removeMeal(id) : this._tracker.removeWorkout(id)
+
+                e.target.closest('.card').remove();
+            }
+        }
     }
 }
 
